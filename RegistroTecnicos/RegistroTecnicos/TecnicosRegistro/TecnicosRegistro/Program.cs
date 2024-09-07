@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TecnicosRegistro.Components;
 using TecnicosRegistro.DAL;
+using TecnicosRegistro.Models;
 using TecnicosRegistro.Service;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +15,11 @@ builder.Services.AddRazorComponents()
 var ConStr = builder.Configuration.GetConnectionString("ConStr");
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlite(ConStr));
 
+var ConStrTipoTecnico = builder.Configuration.GetConnectionString("ConStrTipoTecnico");
+
 builder.Services.AddScoped<TecnicoService>();
+builder.Services.AddScoped<TipoTecnicoService>();
+
 
 var app = builder.Build();
 
