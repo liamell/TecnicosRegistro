@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TecnicosRegistro.Models;
 
@@ -14,5 +15,10 @@ public class Tecnicos
 	[Range(0.01, float.MaxValue, ErrorMessage = "Ingrese un valor mayor a 0")]
 	[Required(ErrorMessage = "Sueldo obligtorio")]
 	public decimal SueldoHora { get; set; }
+
+	[ForeignKey("TipoTecnico")]
+	public int TipoId { get; set; }
+
+	public TipoTecnico? TipoTecnico { get; set; }
 
 }
