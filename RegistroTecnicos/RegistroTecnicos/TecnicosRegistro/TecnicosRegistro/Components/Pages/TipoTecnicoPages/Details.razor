@@ -1,0 +1,55 @@
+﻿@page "/TipoTecnico/Details/{TipoTecnicoId:int}"
+@using TecnicosRegistro.Models
+@using TecnicosRegistro.Service
+@inject TipoTecnicoService tipotecnicoService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Visualizar Tipo T&eacute;cnico</PageTitle>
+<div class="card">
+	<div class="shadow-lg">
+		@*Header*@
+		<div class="card-header text-center">
+			<div class="bg-secondary rounded text-white">
+				<h3><strong>Detalles del tipo t&eacute;cnico</strong></h3>
+			</div>
+		</div>
+		@*Body*@
+		<div class="card-body">
+			<ul>
+				<li><strong>TipoId: </strong>@TipoTecnico.TipoId</li>
+				<li><strong>Descripci&oacute;n: </strong>@TipoTecnico.Descripcion</li>
+			</ul>
+		</div>
+		@*Footer*@
+		<div class="card-footer">
+			<div class="text-center">
+				<button type="button" class="btn btn-outline-info bi bi-arrow-90deg-left" @onclick="()=>Volver()"> Volver</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+@code {
+	[Parameter]
+
+	public int TipoTecnicoId { get; set; }
+	public TipoTecnico TipoTecnico { get; set; } = new TipoTecnico();
+
+	protected override async Task OnInitializedAsync()
+	{
+		TipoTecnico = await tipotecnicoService.BuscarId(TipoTecnicoId);
+
+	}
+
+	public void Volver()
+	{
+		navigationManager.NavigateTo("/TipoTecnico/Index");
+	}
+
+
+
+}
