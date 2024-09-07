@@ -1,0 +1,151 @@
+﻿@page "/TipoTecnico/Index"
+@using TecnicosRegistro.Models
+@using TecnicosRegistro.Service
+@inject TipoTecnicoService tipotecnicoService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+
+<PageTitle>Tipo T&eacute;cnico Index</PageTitle>
+<div class="card">
+	<div class="shadow-lg">
+		@*Header*@
+		<div class="card-header text-center">
+			<div class="bg-secondary rounded text-white">
+				<h3><strong>Lista de Tipos T&eacute;cnicos</strong></h3>
+			</div>
+		</div>
+		@*Body*@
+		<div class="card-body">
+			@*Labels*@
+			<div class="row">
+				<div class="col-3">
+					<label class="form-label" for="Filtro"><strong>Filtrar por</strong></label>
+				</div>
+				<div class="col-4">
+					<label class="form-label" for="ValorFiltro"><strong>B&uacute;squeda</strong></label>
+				</div>
+			</div>
+			@*Inputs y Buttons*@
+			<div class="row">
+				@*Filtro*@
+				<div class="col-3">
+					<InputSelect class="form-select" @bind-Value="filtro">
+						<option value="" disabled>Elija una opción</option>
+						<option value="id">ID</option>
+						<option value="descripcion">Descripci&oacute;n</option>
+					</InputSelect>
+				</div>
+				@*Búsqueda*@
+				<div class="col-4">
+					<div class="input-group">
+						<input class="form-control" @bind="valorFiltro" placeholder="Buscar" />
+						<button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+					</div>
+				</div>
+				<div class="col-auto">
+					<button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise" @onclick="Restablecer"> Restablecer</button>
+				</div>
+				<div class="col text-end">
+					<button type="button" class="btn btn-outline-primary ms-2" @onclick="Crear">Crear</button>
+				</div>
+			</div>
+			@*Tabla*@
+			<div class="text-center mt-3">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>TipoId</th>
+							<th>Descripci&oacute;n</th>
+							<th>Observar</th>
+							<th>Editar</th>
+							<th>Eliminar</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var tipoTecnico in ListaTipoTecnico)
+						{
+							<tr>
+								<td>@tipoTecnico.TipoId</td>
+								<td>@tipoTecnico.Descripcion</td>
+								<td><button type="button" class="btn btn-outline-info bi bi-eye-fill" @onclick="()=> Detalle(tipoTecnico.TipoId)"></button></td>
+								<td><button type="button" class="btn btn-outline-warning bi bi-pencil-square" @onclick="()=> Editar(tipoTecnico.TipoId)"></button></td>
+								<td><button type="button" class="btn btn-outline-danger bi bi-trash2" @onclick="()=> Eliminar(tipoTecnico.TipoId)"></button></td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+		@*Footer*@
+		<div class="card-footer">
+			<p><strong>Total Tipo de T&eacute;cnicos: </strong>@ListaTipoTecnico.Count()</p>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+@code {
+
+	public List <TipoTecnico> ListaTipoTecnico{get; set;} = new List<TipoTecnico>();
+	private string filtro = "";
+	private string valorFiltro = "";
+
+	protected override async Task OnInitializedAsync()
+	{
+		ListaTipoTecnico = await tipotecnicoService.Listar(tp => true);
+	}
+
+	private async Task Buscar()
+	{
+		if (valorFiltro.Trim() != "")
+		{
+			if (filtro == "id" && int.TryParse(valorFiltro, out int tipoId))
+			{
+				ListaTipoTecnico = await tipotecnicoService.Listar(p => p.TipoId == tipoId);
+			}
+			else if (filtro == "descripcion")
+			{
+				ListaTipoTecnico = await tipotecnicoService.Listar(t => t.Descripcion.ToLower().Contains(valorFiltro.ToLower()));
+			}
+		}
+		else
+		{
+			ListaTipoTecnico = await tipotecnicoService.Listar(t => true);
+		}
+	}
+
+	public async Task Restablecer()
+	{
+		ListaTipoTecnico = await tipotecnicoService.Listar(t => true);
+		filtro = string.Empty;
+		valorFiltro = string.Empty;
+	}
+
+	public void Crear()
+	{
+		navigationManager.NavigateTo("/TipoTecnico/Create");
+	}
+
+	public void Detalle(int id)
+	{
+		navigationManager.NavigateTo($"/TipoTecnico/Details/{id}");
+	}
+
+	public void Editar(int id)
+	{
+		navigationManager.NavigateTo($"/TipoTecnico/Edit/{id}");
+	}
+
+	public void Eliminar(int id)
+	{
+		navigationManager.NavigateTo($"/TipoTecnico/Delete/{id}");
+	}
+}
+
+
+
+
