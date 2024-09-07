@@ -11,6 +11,7 @@ public class Contexto : DbContext
 	}
 
 	public DbSet<Tecnicos> Tecnicos { get; set; }
+	public DbSet<TipoTecnico> TipoTecnico { get; set; }
 
 
 }
