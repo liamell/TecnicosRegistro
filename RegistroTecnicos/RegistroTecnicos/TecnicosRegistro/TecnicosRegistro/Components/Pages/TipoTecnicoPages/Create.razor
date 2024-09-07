@@ -1,0 +1,89 @@
+﻿@page "/TipoTecnico/Create"
+@using TecnicosRegistro.Models
+@using TecnicosRegistro.Service
+@inject TipoTecnicoService tipotecnicoService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+
+
+<PageTitle>Crear Tipo T&eacute;cnico</PageTitle>
+<EditForm Model="TipoTecnico" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+	<div class="card">
+		<div class="shadow-lg">
+			@*Header*@
+			<div class="card-header text-center">
+				<div class="bg-secondary rounded text-white">
+					<h3><strong>Crear tipo t&eacute;cnico</strong></h3>
+				</div>
+			</div>
+			@*Body*@
+			<div class="card-body">
+				<div class="row">
+					@*Id*@
+					<div class="col-2">
+						<label class="form-label" for="id"><strong>TipoId</strong></label>
+						<InputNumber class="form-control" id="id" @bind-Value="TipoTecnico.TipoId" readonly></InputNumber>
+					</div>
+					@*Descripción*@
+					<div class="col-5 ms-5">
+						<label class="form-label" for="descripcion"><strong>Descripci&oacute;n</strong></label>
+						<InputText class="form-control" id="descripcion" @bind-Value="TipoTecnico.Descripcion"></InputText>
+						<ValidationMessage For="(()=> TipoTecnico.Descripcion)" />
+					</div>
+				</div>
+			</div>
+			@*Footer*@
+			<div class="card-footer">
+				<div class="text-center">
+					<button type="button" class="btn btn-outline-secondary bi bi-arrow-90deg-left" @onclick="()=>Volver()"> Volver</button>
+					<button type="submit" class="btn btn-outline-success bi bi-floppy"> Crear</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+
+
+
+@code {
+	public TipoTecnico TipoTecnico { get; set; } = new TipoTecnico();
+	public string Mensaje { get; set; } = string.Empty;
+
+
+	public async Task Guardar()
+	{
+        if (await Validar())
+        {
+            Mensaje = "Ya existe un tecnico con esta descripcion";
+            return;
+        }
+
+        var crear = await tipotecnicoService.Guardar(TipoTecnico);
+
+        if (crear)
+            Mensaje = "Se ha creado correctamente el Tipo tecnico";
+        else
+            Mensaje = "No se ha creado correctamente";
+    }
+
+    public async Task<bool> Validar()
+    {
+        var existe = await tipotecnicoService.ExisteDescripcion(TipoTecnico.TipoId, TipoTecnico.Descripcion);
+        return existe;
+    }
+
+    public void Volver()
+    {
+        navigationManager.NavigateTo("/TipoTecnico/Index");
+    }
+}
+
+
+
+
+
+
+
