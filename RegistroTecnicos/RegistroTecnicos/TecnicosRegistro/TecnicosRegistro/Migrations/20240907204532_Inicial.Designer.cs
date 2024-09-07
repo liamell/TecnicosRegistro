@@ -10,8 +10,8 @@ using TecnicosRegistro.DAL;
 namespace TecnicosRegistro.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20240906071048_si")]
-    partial class si
+    [Migration("20240907204532_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,9 +32,40 @@ namespace TecnicosRegistro.Migrations
                     b.Property<decimal>("SueldoHora")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("TipoId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("TecnicoId");
 
+                    b.HasIndex("TipoId");
+
                     b.ToTable("Tecnicos");
+                });
+
+            modelBuilder.Entity("TecnicosRegistro.Models.TipoTecnico", b =>
+                {
+                    b.Property<int>("TipoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TipoId");
+
+                    b.ToTable("TipoTecnico");
+                });
+
+            modelBuilder.Entity("TecnicosRegistro.Models.Tecnicos", b =>
+                {
+                    b.HasOne("TecnicosRegistro.Models.TipoTecnico", "TipoTecnico")
+                        .WithMany()
+                        .HasForeignKey("TipoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TipoTecnico");
                 });
 #pragma warning restore 612, 618
         }
