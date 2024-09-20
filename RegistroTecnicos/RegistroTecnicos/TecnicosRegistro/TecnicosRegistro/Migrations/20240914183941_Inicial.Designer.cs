@@ -10,7 +10,7 @@ using TecnicosRegistro.DAL;
 namespace TecnicosRegistro.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20240907204532_Inicial")]
+    [Migration("20240914183941_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -19,10 +19,31 @@ namespace TecnicosRegistro.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
+            modelBuilder.Entity("TecnicosRegistro.Models.Clientes", b =>
+                {
+                    b.Property<int>("ClienteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nombres")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("WhatssApp")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ClienteId");
+
+                    b.ToTable("Clientes");
+                });
+
             modelBuilder.Entity("TecnicosRegistro.Models.Tecnicos", b =>
                 {
                     b.Property<int>("TecnicoId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CienteId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Nombres")
@@ -36,6 +57,8 @@ namespace TecnicosRegistro.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("TecnicoId");
+
+                    b.HasIndex("CienteId");
 
                     b.HasIndex("TipoId");
 
@@ -59,11 +82,19 @@ namespace TecnicosRegistro.Migrations
 
             modelBuilder.Entity("TecnicosRegistro.Models.Tecnicos", b =>
                 {
+                    b.HasOne("TecnicosRegistro.Models.Clientes", "Clientes")
+                        .WithMany()
+                        .HasForeignKey("CienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TecnicosRegistro.Models.TipoTecnico", "TipoTecnico")
                         .WithMany()
                         .HasForeignKey("TipoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Clientes");
 
                     b.Navigation("TipoTecnico");
                 });
