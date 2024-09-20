@@ -1,0 +1,53 @@
+﻿@page "/Clientes/Details/{ClienteId:int}"
+@using TecnicosRegistro.Models
+@using TecnicosRegistro.Service
+@inject ClientesService clientesService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+
+<PageTitle>Details</PageTitle>
+<div class="container">
+	<div class="shadow-lg">
+		@*Header*@
+		<div class="card-header text-center">
+			<h3><strong>Datos del Cliente</strong></h3>
+		</div>
+		@*Body*@
+		<div class="card-body">
+			<ul class="mt-5">
+				<li><strong>Id: </strong>@Clientes.ClienteId</li>
+				<li><strong>Nombre:  </strong>@Clientes.Nombres</li>
+				<li><strong>SueldoHora: </strong>@Clientes.WhatssApp</li>
+			</ul>
+		</div>
+		@*Footer*@
+		<div class="card-footer text-center">
+			<button type="button" class="btn btn-primary" @onclick="Volver">Volver</button>
+		</div>
+	</div>
+</div>
+
+
+
+@code {
+	[Parameter]
+	public int ClienteId { get; set; }
+
+	public Clientes Clientes { get; set; } = new Clientes();
+
+	protected override async Task OnInitializedAsync()
+	{
+		Clientes = await clientesService.BuscarId(ClienteId);
+	}
+
+	public void Volver()
+	{
+		navigationManager.NavigateTo("/Clientes/Index");
+	}
+
+
+}
+
+
+
