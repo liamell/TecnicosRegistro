@@ -19,6 +19,7 @@ var ConStrTipoTecnico = builder.Configuration.GetConnectionString("ConStrTipoTec
 
 builder.Services.AddScoped<TecnicoService>();
 builder.Services.AddScoped<TipoTecnicoService>();
+builder.Services.AddScoped<ClientesService>();
 
 
 var app = builder.Build();
