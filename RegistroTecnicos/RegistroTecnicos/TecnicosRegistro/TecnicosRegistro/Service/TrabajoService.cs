@@ -76,4 +76,13 @@ public class TrabajoService
 
 	}
 
+    public async Task<bool> Finalizar(int trabajoId)
+    {
+        var cantidad = await _contexto.Trabajo
+        .Where(t => t.TrabajoId == trabajoId)
+        .ExecuteUpdateAsync(setPropertyCalls: T => T.SetProperty(x => x.Fecha, DateTime.Now));
+
+        return cantidad > 0;
+    }
+
 }
