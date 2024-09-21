@@ -21,4 +21,17 @@ public class Tecnicos
 
 	public TipoTecnico? TipoTecnico { get; set; }
 
+    [ForeignKey("Clientes")]
+    public int CienteId { get; set; }
+
+
+    public Clientes? Clientes { get; set; }
+
+    [ForeignKey("Trabajo")]
+
+    public int TrabajoId { get; set; }
+
+
+    public Trabajo? Trabajo { get; set; }
+
 }
