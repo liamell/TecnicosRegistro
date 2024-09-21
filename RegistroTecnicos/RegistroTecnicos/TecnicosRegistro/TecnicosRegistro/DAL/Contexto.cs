@@ -15,5 +15,7 @@ public class Contexto : DbContext
 
 	public DbSet<Clientes> Clientes { get; set; }
 
+	public DbSet<Trabajo> Trabajo { get; set; }
+
 }
 
