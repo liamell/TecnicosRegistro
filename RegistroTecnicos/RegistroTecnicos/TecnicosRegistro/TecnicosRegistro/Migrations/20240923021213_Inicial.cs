@@ -26,6 +26,20 @@ namespace TecnicosRegistro.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Prioridad",
+                columns: table => new
+                {
+                    PrioridadId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Descripcion = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Tiempo = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Prioridad", x => x.PrioridadId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TipoTecnico",
                 columns: table => new
                 {
@@ -64,17 +78,24 @@ namespace TecnicosRegistro.Migrations
                     Nombres = table.Column<string>(type: "TEXT", nullable: false),
                     SueldoHora = table.Column<decimal>(type: "TEXT", nullable: false),
                     TipoId = table.Column<int>(type: "INTEGER", nullable: false),
-                    CienteId = table.Column<int>(type: "INTEGER", nullable: false),
-                    TrabajoId = table.Column<int>(type: "INTEGER", nullable: false)
+                    ClienteId = table.Column<int>(type: "INTEGER", nullable: false),
+                    TrabajoId = table.Column<int>(type: "INTEGER", nullable: false),
+                    PrioridadId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tecnicos", x => x.TecnicoId);
                     table.ForeignKey(
-                        name: "FK_Tecnicos_Clientes_CienteId",
-                        column: x => x.CienteId,
+                        name: "FK_Tecnicos_Clientes_ClienteId",
+                        column: x => x.ClienteId,
                         principalTable: "Clientes",
                         principalColumn: "ClienteId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tecnicos_Prioridad_PrioridadId",
+                        column: x => x.PrioridadId,
+                        principalTable: "Prioridad",
+                        principalColumn: "PrioridadId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Tecnicos_TipoTecnico_TipoId",
@@ -91,9 +112,14 @@ namespace TecnicosRegistro.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tecnicos_CienteId",
+                name: "IX_Tecnicos_ClienteId",
                 table: "Tecnicos",
-                column: "CienteId");
+                column: "ClienteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tecnicos_PrioridadId",
+                table: "Tecnicos",
+                column: "PrioridadId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tecnicos_TipoId",
@@ -114,6 +140,9 @@ namespace TecnicosRegistro.Migrations
 
             migrationBuilder.DropTable(
                 name: "Clientes");
+
+            migrationBuilder.DropTable(
+                name: "Prioridad");
 
             migrationBuilder.DropTable(
                 name: "TipoTecnico");

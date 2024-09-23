@@ -36,18 +36,40 @@ namespace TecnicosRegistro.Migrations
                     b.ToTable("Clientes");
                 });
 
+            modelBuilder.Entity("TecnicosRegistro.Models.Prioridad", b =>
+                {
+                    b.Property<int>("PrioridadId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Tiempo")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PrioridadId");
+
+                    b.ToTable("Prioridad");
+                });
+
             modelBuilder.Entity("TecnicosRegistro.Models.Tecnicos", b =>
                 {
                     b.Property<int>("TecnicoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CienteId")
+                    b.Property<int>("ClienteId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Nombres")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("PrioridadId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("SueldoHora")
                         .HasColumnType("TEXT");
@@ -60,7 +82,9 @@ namespace TecnicosRegistro.Migrations
 
                     b.HasKey("TecnicoId");
 
-                    b.HasIndex("CienteId");
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("PrioridadId");
 
                     b.HasIndex("TipoId");
 
@@ -115,7 +139,13 @@ namespace TecnicosRegistro.Migrations
                 {
                     b.HasOne("TecnicosRegistro.Models.Clientes", "Clientes")
                         .WithMany()
-                        .HasForeignKey("CienteId")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TecnicosRegistro.Models.Prioridad", "Prioridad")
+                        .WithMany()
+                        .HasForeignKey("PrioridadId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -132,6 +162,8 @@ namespace TecnicosRegistro.Migrations
                         .IsRequired();
 
                     b.Navigation("Clientes");
+
+                    b.Navigation("Prioridad");
 
                     b.Navigation("TipoTecnico");
 
