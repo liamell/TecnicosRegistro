@@ -1,0 +1,72 @@
+﻿@page "/Trabajo/Details/{TrabajoId:int}"
+@using TecnicosRegistro.Models
+@using TecnicosRegistro.Service
+@inject TrabajoService trabajoService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+
+<PageTitle>Detalles del Trabajo</PageTitle>
+<div class="container">
+    <div class="shadow-lg">
+        @*Header*@
+        <div class="card-header text-center">
+            <h3><strong>Datos del Trabajo</strong></h3>
+        </div>
+        @*Body*@
+        <div class="card-body">
+            <ul class="mt-5">
+                <li><strong>Id: </strong>@Trabajo.TrabajoId</li>
+                <li><strong>Fecha:  </strong>@Trabajo.Fecha.ToString("yyyy-MM-dd")</li>
+                <li><strong>ClienteId: </strong>@Trabajo.ClienteId</li>
+                <li><strong>TecnicoId: </strong>@Trabajo.TecnicoId</li>
+                <li><strong>Descripción: </strong>@Trabajo.Descripcion</li>
+                <li><strong>Monto: </strong>@Trabajo.Monto</li>
+            </ul>
+        </div>
+        @*Footer*@
+        <div class="card-footer text-center">
+            <button type="button" class="btn btn-primary" @onclick="Volver">Volver</button>
+            <button type="button" class="btn btn-success" @onclick="FinalizarTrabajo">Finalizar y Enviar WhatsApp</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int TrabajoId { get; set; }
+
+    public Trabajo Trabajo { get; set; } = new Trabajo();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Trabajo = await trabajoService.BuscarId(TrabajoId);
+    }
+
+    public void Volver()
+    {
+        navigationManager.NavigateTo("/Trabajo/Index");
+    }
+
+    public async Task FinalizarTrabajo()
+    {
+        
+        var finalizado = await trabajoService.Finalizar(TrabajoId);
+
+        if (finalizado)
+        {
+            
+            string numeroWhatsApp = "123456789"; 
+            string mensaje = $"Hola, el trabajo con ID {Trabajo.TrabajoId} ha sido finalizado. Monto a pagar: {Trabajo.Monto}.";
+            string url = $"https://wa.me/{numeroWhatsApp}?text={Uri.EscapeDataString(mensaje)}";
+
+            
+            navigationManager.NavigateTo(url, true);
+        }
+        else
+        {
+         
+            Console.WriteLine("Error al finalizar el trabajo.");
+        }
+    }
+}
