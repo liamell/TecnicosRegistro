@@ -3,6 +3,7 @@ using TecnicosRegistro.Components;
 using TecnicosRegistro.DAL;
 using TecnicosRegistro.Models;
 using TecnicosRegistro.Service;
+using TecnicosRegistro.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddScoped<TecnicoService>();
 builder.Services.AddScoped<TipoTecnicoService>();
 builder.Services.AddScoped<ClientesService>();
 builder.Services.AddScoped<TrabajoService>();
+builder.Services.AddScoped<PrioridadService>();
 
 
 var app = builder.Build();
