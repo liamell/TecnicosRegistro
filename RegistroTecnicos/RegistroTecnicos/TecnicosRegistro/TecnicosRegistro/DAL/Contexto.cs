@@ -17,5 +17,7 @@ public class Contexto : DbContext
 
 	public DbSet<Trabajo> Trabajo { get; set; }
 
+	public DbSet<Prioridad> Prioridad { get; set; }
+
 }
 
