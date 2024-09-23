@@ -1,0 +1,89 @@
+﻿@page "/Trabajo/Create"
+@using TecnicosRegistro.Models
+@using TecnicosRegistro.Service
+@inject TrabajoService trabajoService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Create</PageTitle>
+<EditForm Model="Trabajo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    @*Formulario*@
+    <div class="container">
+        <div class="shadow-lg">
+            @*Header*@
+            <div class="card-header text-center">
+                <h3><strong>Crear Trabajo</strong></h3>
+            </div>
+            @*Body*@
+            <div class="card-body">
+                <div class="row">
+                    @*Id del Trabajo*@
+                    <div class="col-2">
+                        <label class="form-label"><strong>TrabajoId</strong></label>
+                        <InputNumber class="form-control" @bind-Value="Trabajo.TrabajoId" readonly></InputNumber>
+                    </div>
+                    @*Fecha*@
+                    <div class="col-3 ms-3">
+                        <label class="form-label"><strong>Fecha</strong></label>
+                        <InputDate class="form-control" @bind-Value="Trabajo.Fecha"></InputDate>
+                        <ValidationMessage For="(() => Trabajo.Fecha)" />
+                    </div>
+                    @*ClienteId*@
+                    <div class="col-2 ms-3">
+                        <label class="form-label"><strong>ClienteId</strong></label>
+                        <InputNumber class="form-control" @bind-Value="Trabajo.ClienteId"></InputNumber>
+                        <ValidationMessage For="(() => Trabajo.ClienteId)" />
+                    </div>
+                    @*TecnicoId*@
+                    <div class="col-2 ms-3">
+                        <label class="form-label"><strong>TecnicoId</strong></label>
+                        <InputNumber class="form-control" @bind-Value="Trabajo.TecnicoId"></InputNumber>
+                        <ValidationMessage For="(() => Trabajo.TecnicoId)" />
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    @*Descripción*@
+                    <div class="col-6">
+                        <label class="form-label"><strong>Descripción</strong></label>
+                        <InputTextArea class="form-control" @bind-Value="Trabajo.Descripcion"></InputTextArea>
+                        <ValidationMessage For="(() => Trabajo.Descripcion)" />
+                    </div>
+                    @*Monto*@
+                    <div class="col-3 ms-5">
+                        <label class="form-label"><strong>Monto</strong></label>
+                        <InputNumber class="form-control" @bind-Value="Trabajo.Monto"></InputNumber>
+                        <ValidationMessage For="(() => Trabajo.Monto)" />
+                    </div>
+                </div>
+            </div>
+            @*Footer*@
+            <div class="card-footer text-center">
+                <button type="button" class="btn btn-primary" @onclick="Volver">Volver</button>
+                <button type="submit" class="btn btn-success">Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Trabajo Trabajo { get; set; } = new Trabajo();
+    public string Mensaje { get; set; } = string.Empty;
+
+    public async Task Guardar()
+    {
+
+        var crear = await trabajoService.Guardar(Trabajo);
+
+        if (crear)
+            Mensaje = "Se ha creado correctamente el Trabajo";
+        else
+            Mensaje = "No se ha creado correctamente";
+    }
+
+
+    public void Volver()
+    {
+        navigationManager.NavigateTo("/Trabajo/Index");
+    }
+}
