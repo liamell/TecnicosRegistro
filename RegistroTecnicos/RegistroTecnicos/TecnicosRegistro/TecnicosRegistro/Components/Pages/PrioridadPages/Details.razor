@@ -1,0 +1,42 @@
+﻿@page "/Prioridad/Details/{PrioridadId:int}"
+@using TecnicosRegistro.Models
+@using TecnicosRegistro.Services
+@inject PrioridadService prioridadService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Detalles de Prioridad</PageTitle>
+<div class="container">
+    <div class="shadow-lg">
+        @*Header*@
+        <div class="card-header text-center">
+            <h3><strong>Datos de la Prioridad</strong></h3>
+        </div>
+        @*Body*@
+        <div class="card-body">
+            <ul class="mt-5">
+                <li><strong>Id: </strong>@Prioridad.PrioridadId</li>
+                <li><strong>Descripción: </strong>@Prioridad.Descripcion</li>
+                <li><strong>Tiempo (Horas): </strong>@Prioridad.Tiempo</li>
+            </ul>
+        </div>
+        @*Footer*@
+        <div class="card-footer text-center">
+            <button type="button" class="btn btn-primary" @onclick="Volver">Volver</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int PrioridadId { get; set; }
+
+    public Prioridad Prioridad { get; set; } = new Prioridad();
+
+
+    public void Volver()
+    {
+        
+        navigationManager.NavigateTo("/Prioridad/Index");
+    }
+}
