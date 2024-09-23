@@ -1,0 +1,138 @@
+﻿@page "/Prioridad/Index"
+@using TecnicosRegistro.Models
+@using TecnicosRegistro.Services
+@inject PrioridadService prioridadService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Index</PageTitle>
+<div class="container">
+    <div class="card-shadow-lg">
+        <div class="card-header text-center">
+            <h3><strong>Listado de Prioridades</strong></h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-3">
+                    <label class="form-label"><strong>Filtrar Por</strong></label>
+                </div>
+                <div class="col-4">
+                    <label class="form-label"><strong>Búsqueda</strong></label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Elija una opción</option>
+                        <option value="Id">Id</option>
+                        <option value="Descripcion">Descripción</option>
+                        <option value="Tiempo">Tiempo</option>
+                    </InputSelect>
+                </div>
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-outline-secondary bi bi-arrow-clockwise" @onclick="Restablecer"></button>
+                </div>
+                <div class="col text-end">
+                    <button type="button" class="btn btn-primary bi bi-plus-circle" @onclick="Crear"></button>
+                </div>
+            </div>
+            <table class="table table-bordered text-center mt-4">
+                <thead>
+                    <tr>
+                        <th>PrioridadId</th>
+                        <th>Descripción</th>
+                        <th>Tiempo</th>
+                        <th>Ver</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var prioridad in ListaPrioridades)
+                    {
+                        <tr>
+                            <td>@prioridad.PrioridadId</td>
+                            <td>@prioridad.Descripcion</td>
+                            <td>@prioridad.Tiempo</td>
+                            <td>
+                                <button type="button" class="btn btn-outline-primary bi bi-eye"
+                                        @onclick="()=> Observar(prioridad.PrioridadId)"></button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-outline-warning bi bi-pencil"
+                                        @onclick="()=> Editar(prioridad.PrioridadId)"></button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-outline-danger bi bi-trash3"
+                                        @onclick="()=> Eliminar(prioridad.PrioridadId)"></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <p><strong>Total de Prioridades: </strong>@ListaPrioridades.Count()</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<Prioridad> ListaPrioridades { get; set; } = new List<Prioridad>();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Asegúrate de que este método Listar sea asíncrono y devuelva Task<List<Prioridad>>
+        ListaPrioridades = await prioridadService.Listar(p => p.PrioridadId > 0);
+    }
+
+    private async Task Buscar()
+    {
+        if (ValorFiltro.Trim() != "")
+        {
+            if (Filtro == "Id" && int.TryParse(ValorFiltro, out int prioridadId))
+                ListaPrioridades = await prioridadService.Listar(p => p.PrioridadId == prioridadId);
+            else if (Filtro == "Descripcion")
+                ListaPrioridades = await prioridadService.Listar(p => p.Descripcion.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+        else
+        {
+            ListaPrioridades = await prioridadService.Listar(p => p.PrioridadId > 0);
+        }
+    }
+
+    private async Task Restablecer()
+    {
+        ListaPrioridades = await prioridadService.Listar(p => p.PrioridadId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+
+    public void Crear()
+    {
+        navigationManager.NavigateTo("/Prioridad/Create");
+    }
+
+    public void Observar(int id)
+    {
+        navigationManager.NavigateTo($"Prioridad/Details/{id}");
+    }
+
+    public void Editar(int id)
+    {
+        navigationManager.NavigateTo($"/Prioridad/Edit/{id}");
+    }
+
+    public void Eliminar(int id)
+    {
+        navigationManager.NavigateTo($"/Prioridad/Delete/{id}");
+    }
+}
