@@ -1,19 +1,18 @@
-﻿@page "/Tabajo/Index"
-@using TecnicosRegistro.DAL
+﻿@page "/Trabajo/Index"
 @using TecnicosRegistro.Models
 @using TecnicosRegistro.Service
 @inject TrabajoService trabajoService
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
-
+@*HTML*@
 
 <PageTitle>Index</PageTitle>
 <div class="container">
     <div class="card-shadow-lg">
         @*Header*@
         <div class="card-header text-center">
-            <h3><strong>Listado de Clientes</strong></h3>
+            <h3><strong>Listado de Trabajos</strong></h3>
         </div>
         @*Body*@
         <div class="card-body">
@@ -35,8 +34,8 @@
                     <InputSelect class="form-select" @bind-Value="Filtro">
                         <option value="" selected disabled>Elija una opci&oacute;n</option>
                         <option value="Id">Id</option>
-                        <option value="Nombre">Nombre</option>
-                        <option value="WhatssApp">WhatssApp</option>
+                        <option value="Descripcion">Descripci&oacute;n</option>
+                        <option value="Monto">Monto</option>
                     </InputSelect>
                 </div>
                 @*Busqueda*@
@@ -62,7 +61,7 @@
                         <th>Fecha</th>
                         <th>ClienteId</th>
                         <th>TecnicoId</th>
-                        <th>Descripcion</th>
+                        <th>Descripci&oacute;n</th>
                         <th>Monto</th>
                         <th>Observar</th>
                         <th>Editar</th>
@@ -70,7 +69,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var trabajo in ListaTrabajo)
+                    @foreach (var trabajo in ListaTrabajos)
                     {
                         <tr>
                             <td>@trabajo.TrabajoId</td>
@@ -79,46 +78,41 @@
                             <td>@trabajo.TecnicoId</td>
                             <td>@trabajo.Descripcion</td>
                             <td>@trabajo.Monto</td>
-                           
-                            
                             @*Pantalla Observar*@
                             <td>
                                 <button type="button" class="btn btn-outline-primary bi bi-eye"
-                                        @onclick="()=> Observar(trabajo.TrabajoId)"></button>
+                                        @onclick="() => Observar(trabajo.TrabajoId)"></button>
                             </td>
                             @*Pantalla Editar*@
                             <td>
                                 <button type="button" class="btn btn-outline-warning bi bi-pencil"
-                                        @onclick="()=> Editar(trabajo.TrabajoId)"></button>
+                                        @onclick="() => Editar(trabajo.TrabajoId)"></button>
                             </td>
                             @*Pantalla Eliminar*@
                             <td>
                                 <button type="button" class="btn btn-outline-danger bi bi-trash3"
-                                        @onclick="()=> Eliminar(trabajo.TrabajoId)"></button>
+                                        @onclick="() => Eliminar(trabajo.TrabajoId)"></button>
                             </td>
                         </tr>
                     }
-
                 </tbody>
             </table>
         </div>
         @*Footer*@
         <div class="card-footer">
-            <p><strong>Total de Clientes</strong>@ListaTrabajo.Count()</p>
+            <p><strong>Total de Trabajos </strong>@ListaTrabajos.Count()</p>
         </div>
     </div>
 </div>
 
-
 @code {
-
-    public List<Trabajo> ListaTrabajo { get; set; } = new List<Trabajo>();
+    public List<Trabajo> ListaTrabajos { get; set; } = new List<Trabajo>();
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        ListaTrabajo = await trabajoService.Listar(t => t.ClienteId > 0);
+        ListaTrabajos = await trabajoService.Listar(t => t.TrabajoId > 0);
     }
 
     private async Task Buscar()
@@ -126,21 +120,22 @@
         if (ValorFiltro.Trim() != "")
         {
             if (Filtro == "Id" && int.TryParse(ValorFiltro, out int trabajoId))
-                ListaTrabajo = await trabajoService.Listar(t => t.TrabajoId == trabajoId);
-
-
+                ListaTrabajos = await trabajoService.Listar(t => t.TrabajoId == trabajoId);
+            else if (Filtro == "Descripcion")
+                ListaTrabajos = await trabajoService.Listar(t => t.Descripcion.ToLower().Contains(ValorFiltro.ToLower()));
         }
         else
-            ListaTrabajo = await trabajoService.Listar(t => t.ClienteId > 0);
+        {
+            ListaTrabajos = await trabajoService.Listar(t => t.TrabajoId > 0);
+        }
     }
 
     private async Task Restablecer()
     {
-        ListaTrabajo = await trabajoService.Listar(t => t.TrabajoId > 0);
+        ListaTrabajos = await trabajoService.Listar(t => t.TrabajoId > 0);
         Filtro = string.Empty;
         ValorFiltro = string.Empty;
     }
-
 
     public void Crear()
     {
@@ -161,6 +156,4 @@
     {
         navigationManager.NavigateTo($"/Trabajo/Delete/{id}");
     }
-
-
 }
