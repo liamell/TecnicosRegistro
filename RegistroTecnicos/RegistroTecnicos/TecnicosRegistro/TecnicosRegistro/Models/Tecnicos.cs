@@ -10,10 +10,10 @@ public class Tecnicos
 
 	[RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "No se permiten caracteres especiales")]
 	[Required(ErrorMessage = "Nombre obligatorio")]
-	public string? Nombres { get; set; }
+	public string Nombres { get; set; }
 
-	[Range(0.01, float.MaxValue, ErrorMessage = "Ingrese un valor mayor a 0")]
-	[Required(ErrorMessage = "Sueldo obligtorio")]
+	[Range(0.01, (double)decimal.MaxValue, ErrorMessage = "Ingrese un valor mayor a 0")]
+	[Required(ErrorMessage = "Sueldo obligatorio")]
 	public decimal SueldoHora { get; set; }
 
 	[ForeignKey("TipoTecnico")]
@@ -21,17 +21,25 @@ public class Tecnicos
 
 	public TipoTecnico? TipoTecnico { get; set; }
 
-    [ForeignKey("Clientes")]
-    public int CienteId { get; set; }
+	[ForeignKey("Clientes")]
+	public int ClienteId { get; set; }
+
+	public Clientes? Clientes { get; set; }
+
+	[ForeignKey("Trabajo")]
+	public int TrabajoId { get; set; }
+
+	public Trabajo? Trabajo { get; set; }
 
 
-    public Clientes? Clientes { get; set; }
+	[ForeignKey("Prioridad")]
 
-    [ForeignKey("Trabajo")]
+	public int PrioridadId { get; set; }
 
-    public int TrabajoId { get; set; }
-
-
-    public Trabajo? Trabajo { get; set; }
+	public Prioridad? Prioridad { get; set; }
 
 }
+
+
+
+
