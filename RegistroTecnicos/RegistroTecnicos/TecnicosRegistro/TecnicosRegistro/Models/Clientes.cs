@@ -14,6 +14,8 @@ public class Clientes
 	[Required(ErrorMessage = "WhatsApp obligatorio")]
 	[RegularExpression(@"^\d{7,15}$", ErrorMessage = "El número de WhatsApp debe contener entre 7 y 15 dígitos.")]
 	public string? WhatssApp { get; set; }
+
+
 }
 
 
