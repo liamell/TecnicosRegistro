@@ -13,7 +13,7 @@ public class Trabajo
 	[Required(ErrorMessage = "Nombre obligatorio")]
 
 	public string? Descripcion { get; set; }
-
+	
 	[Range(0.01, float.MaxValue, ErrorMessage = "Ingrese un valor mayor a 0")]
 	[Required(ErrorMessage = "Monto obligtorio")]
 
