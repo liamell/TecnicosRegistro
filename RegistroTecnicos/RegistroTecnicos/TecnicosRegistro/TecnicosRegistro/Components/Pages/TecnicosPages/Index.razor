@@ -41,7 +41,7 @@
                 @*Busqueda*@
                 <div class="col-4">
                     <div class="input-group">
-                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar"/>
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
                         <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
                     </div>
                 </div>
@@ -66,7 +66,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach(var tecnico in ListaTecnicos) {
+                    @foreach (var tecnico in ListaTecnicos)
+                    {
                         <tr>
                             <td>@tecnico.TecnicoId</td>
                             <td>@tecnico.Nombres</td>
@@ -107,11 +108,13 @@
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
 
-    protected override async Task OnInitializedAsync() {
+    protected override async Task OnInitializedAsync()
+    {
         ListaTecnicos = await tecnicoService.Listar(t => t.TecnicoId > 0);
     }
 
-    private async Task Buscar() {
+    private async Task Buscar()
+    {
         if (ValorFiltro.Trim() != "")
         {
             if (Filtro == "Id" && int.TryParse(ValorFiltro, out int tecnicoId))
@@ -124,25 +127,30 @@
             ListaTecnicos = await tecnicoService.Listar(t => t.TecnicoId > 0);
     }
 
-    private async Task Restablecer() {
+    private async Task Restablecer()
+    {
         ListaTecnicos = await tecnicoService.Listar(t => t.TecnicoId > 0);
         Filtro = string.Empty;
         ValorFiltro = string.Empty;
     }
 
-    public void Crear() {
+    public void Crear()
+    {
         navigationManager.NavigateTo("/Tecnico/Create");
     }
 
-    public void Observar(int id) {
+    public void Observar(int id)
+    {
         navigationManager.NavigateTo($"Tecnico/Details/{id}");
     }
-    
-    public void Editar(int id) {
+
+    public void Editar(int id)
+    {
         navigationManager.NavigateTo($"/Tecnico/Edit/{id}");
     }
-    
-    public void Eliminar(int id) {
+
+    public void Eliminar(int id)
+    {
         navigationManager.NavigateTo($"/Tecnico/Delete/{id}");
     }
 
