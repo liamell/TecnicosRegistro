@@ -23,6 +23,7 @@ builder.Services.AddScoped<TipoTecnicoService>();
 builder.Services.AddScoped<ClientesService>();
 builder.Services.AddScoped<TrabajoService>();
 builder.Services.AddScoped<PrioridadService>();
+builder.Services.AddScoped<ArticuloService>();
 
 
 var app = builder.Build();
