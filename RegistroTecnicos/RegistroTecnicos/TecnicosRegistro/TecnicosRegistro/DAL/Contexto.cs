@@ -19,5 +19,18 @@ public class Contexto : DbContext
 
 	public DbSet<Prioridad> Prioridad { get; set; }
 
+	public DbSet<Articulo> Articulo { get; set; }
+
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		base.OnModelCreating(modelBuilder);
+		modelBuilder.Entity<Articulo>().HasData(new List<Articulo>()
+		{
+		
+		});
+	}
+
+
+
 }
 
