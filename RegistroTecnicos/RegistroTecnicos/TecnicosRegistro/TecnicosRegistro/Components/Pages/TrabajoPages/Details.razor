@@ -36,9 +36,12 @@
                     @foreach (var detalle in Trabajo.TrabajosDetalle)
                     {
                         <li class="mt-2">
-                            Articulo ID: @detalle.ArticuloId -- @detalle.Articulo?.Descripcion -- Cantidad: @detalle.Cantidad
-                            -- Precio:$ @detalle.Articulo.Precio -- PrecioTotal: $ @detalle.Precio
-                        </li>
+                            Articulo ID: @detalle.ArticuloId
+                            -- @detalle.Articulo?.Descripcion ?? "Descripción no disponible"
+                            -- Cantidad: @detalle.Cantidad
+                            -- Precio: $@detalle.Articulo?.Precio ?? "N/A"
+                            -- PrecioTotal: $ @detalle.Precio
+                            </li>
                     }
                 </ul>
             </div>
