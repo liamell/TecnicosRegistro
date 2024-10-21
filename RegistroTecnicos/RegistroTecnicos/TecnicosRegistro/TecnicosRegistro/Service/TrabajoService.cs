@@ -5,84 +5,105 @@ using TecnicosRegistro.Models;
 
 namespace TecnicosRegistro.Service;
 
-public class TrabajoService
+public class TrabajoService(Contexto contexto)
 {
-	private readonly Contexto _contexto;
-
-	public TrabajoService(Contexto contexto)
-	{
-		_contexto = contexto;
-	}
-
-	public async Task<bool> Guardar(Trabajo trabajo)
-	{
-		if (!await Existe(trabajo.TrabajoId))
-			return await Insertar(trabajo);
-		else
-			return await Modificar(trabajo);
-	}
-
-	private async Task<bool> Existe(int trabajoId)
-	{
-		return await _contexto.Trabajo
-			.AnyAsync(t => t.TrabajoId == trabajoId);
-	}
-
-	public async Task<bool> ExisteCliente(int clienteId, string nombre)
-	{
-		return await _contexto.Clientes
-			.AnyAsync(c => c.ClienteId != clienteId
-			&& c.Nombres.ToLower().Equals(nombre.ToLower()));
-	}
-
-
-
-	private async Task<bool> Insertar(Trabajo trabajo)
-	{
-		_contexto.Trabajo
-			.Add(trabajo);
-		return await _contexto.SaveChangesAsync() > 0;
-	}
-
-	private async Task<bool> Modificar(Trabajo trabajo)
-	{
-		_contexto.Update(trabajo);
-		var modificado = await _contexto.SaveChangesAsync() > 0;
-		_contexto.Entry(trabajo).State = EntityState.Detached;
-		return modificado;
-	}
-	public async Task<bool> Eliminar(Trabajo trabajo)
-	{
-		return await _contexto.Trabajo
-			.AsNoTracking()
-			.Where(t => t.TrabajoId == trabajo.TrabajoId)
-			.ExecuteDeleteAsync() > 0;
-	}
-
-	public async Task<Trabajo?> BuscarId(int id)
-	{
-		return await _contexto.Trabajo
-			.AsNoTracking()
-			.FirstOrDefaultAsync(t => t.TrabajoId == id);
-	
-	}
-
-	public async Task<List<Trabajo>> Listar(Expression<Func<Trabajo, bool>> criterio)
-	{
-		return await _contexto.Trabajo
-			.AsNoTracking()
-			.Where(criterio)
-			.ToListAsync();
-
-	}
-
-    public async Task<bool> Finalizar(int trabajoId)
+    private async Task<bool> Existe(int trabajoId)
     {
-        var cantidad = await _contexto.Trabajo
-        .Where(t => t.TrabajoId == trabajoId)
-        .ExecuteUpdateAsync(setPropertyCalls: T => T.SetProperty(x => x.Fecha, DateTime.Now));
+        return await contexto.Trabajo.AnyAsync(e => e.TrabajoId == trabajoId);
+    }
 
-        return cantidad > 0;
+    private async Task<bool> Insertar(Trabajo trabajo)
+    {
+        await AfectarCantidad(trabajo.TrabajosDetalle.ToArray(), true);
+        contexto.Trabajo.Add(trabajo);
+        return await contexto.SaveChangesAsync() > 0;
+    }
+
+    private async Task<bool> Modificar(Trabajo trabajos)
+    {
+        var trabajoOriginal = await contexto.Trabajo
+        .Include(t => t.TrabajosDetalle)
+        .AsNoTracking()
+        .FirstOrDefaultAsync(t => t.TrabajoId == trabajos.TrabajoId);
+
+        await AfectarCantidad(trabajoOriginal.TrabajosDetalle.ToArray(), false);
+
+        await AfectarCantidad(trabajos.TrabajosDetalle.ToArray(), true);
+
+        contexto.Update(trabajos);
+        return await contexto.SaveChangesAsync() > 0;
+    }
+
+    public async Task<bool> Guardar(Trabajo trabajo)
+    {
+        if (!await Existe(trabajo.TrabajoId))
+            return await Insertar(trabajo);
+        else
+            return await Modificar(trabajo);
+    }
+
+    public async Task<bool> Eliminar(int trabajoId)
+    {
+        var trabajo = contexto.Trabajo.Find(trabajoId);
+        if (trabajo == null)
+            return false;
+
+        await AfectarCantidad(trabajo.TrabajosDetalle.ToArray(), false);
+        return await contexto.Trabajo
+            .Include(t => t.TrabajosDetalle)
+            .Where(e => e.TrabajoId == trabajoId) 
+            .ExecuteDeleteAsync() > 0;
+    }
+    public async Task<Trabajo> Buscar(int id)
+    {
+        return await contexto.Trabajo
+            .Include(e => e.Tecnico).Include(e => e.Cliente)
+            .Include(e => e.Prioridad)
+            .Include(t => t.TrabajosDetalle)
+            .AsNoTracking()
+           .FirstOrDefaultAsync(e => e.TrabajoId == id);
+    }
+
+    public async Task<Trabajo> BuscarConDetalles(int trabajoId)
+    {
+        return await contexto.Trabajo
+            .Include(t => t.Prioridad)
+            .Include(t => t.Cliente)
+            .Include(t => t.Tecnico)
+            .Include(t => t.TrabajosDetalle)
+            .ThenInclude(td => td.Articulo)
+            .FirstOrDefaultAsync(t => t.TrabajoId == trabajoId);
+    }
+
+    public async Task<List<Trabajo>> Listar(Expression<Func<Trabajo, bool>> criterio)
+    {
+        return await contexto.Trabajo.Include(e => e.Tecnico)
+            .Include(e => e.Cliente)
+            .Include(e => e.Prioridad)
+            .Include(t => t.TrabajosDetalle)
+            .AsNoTracking().Where(criterio).ToListAsync();
+    }
+
+    public async Task<bool> ExisteTrabajo(int trabajoId)
+    {
+        return await
+            contexto.Trabajo
+            .AnyAsync(e => e.TrabajoId == trabajoId);
+    }
+
+    public async Task AfectarCantidad(TrabajosDetalle[] detalles, bool resta)
+    {
+        foreach (var item in detalles)
+        {
+            var articulo = await contexto.Articulo.SingleAsync(a => a.ArticuloId == item.ArticuloId);
+            if (resta)
+                articulo.Existencia -= item.Cantidad;
+            else
+                articulo.Existencia += item.Cantidad;
+        }
+        await contexto.SaveChangesAsync(); // Guarda los cambios
     }
 
 }
+
+
