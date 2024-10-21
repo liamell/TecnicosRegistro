@@ -55,12 +55,7 @@
 
     public async Task Guardar()
     {
-        if (await Validar())
-        {
-            Mensaje = "Ya existe un tecnico con este nombre";
-            return;
-        }
-
+        
         var crear = await tecnicoService.Guardar(Tecnico);
 
         if (crear)
@@ -69,11 +64,7 @@
             Mensaje = "No se ha creado correctamente";
     }
 
-    private async Task<bool> Validar()
-    {
-        var existe = await tecnicoService.ExisteTecnico(Tecnico.TecnicoId, Tecnico.Nombres);
-        return existe;
-    }
+    
 
     public void Volver()
     {

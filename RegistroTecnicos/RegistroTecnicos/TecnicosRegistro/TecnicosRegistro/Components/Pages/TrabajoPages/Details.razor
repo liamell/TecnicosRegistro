@@ -1,36 +1,57 @@
 ﻿@page "/Trabajo/Details/{TrabajoId:int}"
 @using TecnicosRegistro.Models
 @using TecnicosRegistro.Service
-@inject TrabajoService trabajoService
+@inject TrabajoService trabajosService
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
 
-<PageTitle>Detalles del Trabajo</PageTitle>
+
+@*HTML*@
+<PageTitle>Delete</PageTitle>
 <div class="container">
     <div class="shadow-lg">
-        @*Header*@
+        @*header*@
         <div class="card-header text-center">
-            <h3><strong>Datos del Trabajo</strong></h3>
+            <h3><strong>Eliminar Trabajo</strong></h3>
         </div>
-        @*Body*@
+
+        @*body*@
         <div class="card-body">
-            <ul class="mt-5">
-                <li><strong>Id: </strong>@Trabajo.TrabajoId</li>
-                <li><strong>Fecha:  </strong>@Trabajo.Fecha.ToString("yyyy-MM-dd")</li>
-                <li><strong>ClienteId: </strong>@Trabajo.ClienteId</li>
-                <li><strong>TecnicoId: </strong>@Trabajo.TecnicoId</li>
-                <li><strong>Descripción: </strong>@Trabajo.Descripcion</li>
+            <div class="text-center">
+                <h4><strong>¿Desea eliminar este trabajo?</strong></h4>
+            </div>
+            <ul>
+                <li><strong>TrabajoId: </strong>@Trabajo.TrabajoId</li>
+                <li><strong>Fecha: </strong>@Trabajo.Fecha</li>
+                <li><strong>Prioridad Descripcion: </strong>@Trabajo.Prioridad.Descripcion</li>
+                <li><strong>Cliente: </strong>@Trabajo.Cliente.Nombres</li>
+                <li><strong>Tecnico: </strong>@Trabajo.Tecnico.Nombres</li>
+                <li><strong>Descripci&oacute;n: </strong>@Trabajo.Descripcion</li>
                 <li><strong>Monto: </strong>@Trabajo.Monto</li>
             </ul>
-        </div>
-        @*Footer*@
-        <div class="card-footer text-center">
-            <button type="button" class="btn btn-primary" @onclick="Volver">Volver</button>
-            <button type="button" class="btn btn-success" @onclick="FinalizarTrabajo">Finalizar y Enviar WhatsApp</button>
+            <div class="border border-success p-2 mt-2">
+                <h5>Detalles de articulos utilizados</h5>
+                <ul class="mt-3">
+                    @foreach (var detalle in Trabajo.TrabajosDetalle)
+                    {
+                        <li class="mt-2">
+                            Articulo ID: @detalle.ArticuloId -- @detalle.Articulo?.Descripcion -- Cantidad: @detalle.Cantidad
+                            -- Precio:$ @detalle.Articulo.Precio -- PrecioTotal: $ @detalle.Precio
+                        </li>
+                    }
+                </ul>
+            </div>
         </div>
     </div>
+    @*Footer*@
+    <div class="card-footer text-center">
+        <button type="button" class="btn btn-primary bi bi-arrow-90deg-left" @onclick="Volver"></button>
+        <button type="submit" class="btn btn-danger bi bi-trash" @onclick="Eliminar"></button>
+    </div>
 </div>
+
+@Mensaje
 
 @code {
     [Parameter]
@@ -38,35 +59,30 @@
 
     public Trabajo Trabajo { get; set; } = new Trabajo();
 
+    public string Mensaje { get; set; } = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
-        Trabajo = await trabajoService.BuscarId(TrabajoId);
+        Trabajo = await trabajosService.BuscarConDetalles(TrabajoId);
     }
 
     public void Volver()
     {
-        navigationManager.NavigateTo("/Trabajo/Index");
+        navigationManager.NavigateTo("/Tecnicos/Trabajos/Index");
     }
 
-    public async Task FinalizarTrabajo()
+    public async Task Eliminar()
     {
-        
-        var finalizado = await trabajoService.Finalizar(TrabajoId);
+        var eliminado = await trabajosService.Eliminar(Trabajo.TrabajoId);
 
-        if (finalizado)
+        if (eliminado)
         {
-            
-            string numeroWhatsApp = "123456789"; 
-            string mensaje = $"Hola, el trabajo con ID {Trabajo.TrabajoId} ha sido finalizado. Monto a pagar: {Trabajo.Monto}.";
-            string url = $"https://wa.me/{numeroWhatsApp}?text={Uri.EscapeDataString(mensaje)}";
-
-            
-            navigationManager.NavigateTo(url, true);
+            Mensaje = "El trabajo a sido eliminado correctamente";
+            navigationManager.NavigateTo("/Tecnicos/Trabajos/Index");
         }
         else
         {
-         
-            Console.WriteLine("Error al finalizar el trabajo.");
+            Mensaje = "El trabajo no a sido eliminado correctamente";
         }
     }
 }

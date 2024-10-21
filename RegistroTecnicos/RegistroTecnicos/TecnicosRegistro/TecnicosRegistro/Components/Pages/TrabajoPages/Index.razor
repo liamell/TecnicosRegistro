@@ -5,39 +5,47 @@
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
-@*HTML*@
 
+@*HTML*@
 <PageTitle>Index</PageTitle>
 <div class="container">
-    <div class="card-shadow-lg">
-        @*Header*@
+    <div class="shadow-lg">
+
+        @*header*@
         <div class="card-header text-center">
             <h3><strong>Listado de Trabajos</strong></h3>
         </div>
-        @*Body*@
+
+        @*body*@
         <div class="card-body">
-            @*Labels*@
+
+            @*labels*@
             <div class="row">
+
                 @*Filtrar por*@
                 <div class="col-3">
-                    <label class="form-label"><strong>Filtrar Por</strong></label>
+                    <label class="col-form-label"><strong>Filtrar por</strong></label>
                 </div>
+
                 @*ValorFiltro*@
                 <div class="col-4">
-                    <label class="form-label"><strong>B&uacute;squeda</strong></label>
+                    <label class="col-form-label"><strong>B&uacute;squeda</strong></label>
                 </div>
             </div>
-            @*Inputs y Botones*@
-            <div class="row">
-                @*Filtro*@
+
+            @*Inputs y botones*@
+            <div class="row align-items-center">
+                @*filtro*@
                 <div class="col-3">
                     <InputSelect class="form-select" @bind-Value="Filtro">
                         <option value="" selected disabled>Elija una opci&oacute;n</option>
-                        <option value="Id">Id</option>
-                        <option value="Descripcion">Descripci&oacute;n</option>
-                        <option value="Monto">Monto</option>
+                        <option value="Prioridad">Prioridad</option>
+                        <option value="Descripcion">Descripcion</option>
+                        <option value="Fecha">Fecha</option>
+
                     </InputSelect>
                 </div>
+
                 @*Busqueda*@
                 <div class="col-4">
                     <div class="input-group">
@@ -45,14 +53,13 @@
                         <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
                     </div>
                 </div>
+
                 @*Restablecer*@
                 <div class="col-auto">
                     <button type="button" class="btn btn-outline-secondary bi bi-arrow-clockwise" @onclick="Restablecer"></button>
                 </div>
-                @*Crear*@
-                <div class="col text-end">
-                    <button type="button" class="btn btn-primary bi bi-plus-circle" @onclick="Crear"></button>
-                </div>
+
+
             </div>
             <table class="table table-bordered text-center mt-4">
                 <thead>
@@ -60,12 +67,15 @@
                         <th>TrabajoId</th>
                         <th>Fecha</th>
                         <th>ClienteId</th>
+                        <th>Cliente</th>
                         <th>TecnicoId</th>
+                        <th>Tecnico</th>
                         <th>Descripci&oacute;n</th>
+                        <th>Prioridad</th>
                         <th>Monto</th>
-                        <th>Observar</th>
-                        <th>Editar</th>
-                        <th>Eliminar</th>
+                        <th>Details</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,33 +84,38 @@
                         <tr>
                             <td>@trabajo.TrabajoId</td>
                             <td>@trabajo.Fecha</td>
-                            <td>@trabajo.ClienteId</td>
-                            <td>@trabajo.TecnicoId</td>
+                            <td>@trabajo.Cliente.ClienteId</td>
+                            <td>@trabajo.Cliente.Nombres</td>
+                            <td>@trabajo.Tecnico.TecnicoId</td>
+                            <td>@trabajo.Tecnico.Nombres</td>
                             <td>@trabajo.Descripcion</td>
+                            <td>@trabajo.Prioridad.Descripcion</td>
                             <td>@trabajo.Monto</td>
-                            @*Pantalla Observar*@
+
                             <td>
-                                <button type="button" class="btn btn-outline-primary bi bi-eye"
-                                        @onclick="() => Observar(trabajo.TrabajoId)"></button>
+                                <a href="/Tecnicos/Trabajos/Details/@trabajo.TrabajoId" class="btn btn-outline-primary bi bi-eye-fill"></a>
                             </td>
-                            @*Pantalla Editar*@
+
                             <td>
-                                <button type="button" class="btn btn-outline-warning bi bi-pencil"
-                                        @onclick="() => Editar(trabajo.TrabajoId)"></button>
+                                <a href="/Tecnicos/Trabajos/Edit/@trabajo.TrabajoId" class="btn btn-outline-warning bi bi-pencil-square"></a>
                             </td>
-                            @*Pantalla Eliminar*@
+
                             <td>
-                                <button type="button" class="btn btn-outline-danger bi bi-trash3"
-                                        @onclick="() => Eliminar(trabajo.TrabajoId)"></button>
+                                <a href="/Tecnico/Trabajos/Delete/@trabajo.TrabajoId" class="btn btn-outline-danger bi bi-trash-fill"></a>
                             </td>
+
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
-        @*Footer*@
+        @*footer*@
         <div class="card-footer">
-            <p><strong>Total de Trabajos </strong>@ListaTrabajos.Count()</p>
+            <p><strong>Total de Trabajos: </strong>@ListaTrabajos.Count</p>
+            @*Crear*@
+            <div class="col-3">
+                <a href="/Trabajo/Create" class="btn btn-outline-primary">Crear</a>
+            </div>
         </div>
     </div>
 </div>
@@ -112,48 +127,37 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaTrabajos = await trabajoService.Listar(t => t.TrabajoId > 0);
+        ListaTrabajos = await trabajoService.Listar(e => e.TrabajoId > 0);
     }
 
     private async Task Buscar()
     {
         if (ValorFiltro.Trim() != "")
         {
-            if (Filtro == "Id" && int.TryParse(ValorFiltro, out int trabajoId))
-                ListaTrabajos = await trabajoService.Listar(t => t.TrabajoId == trabajoId);
-            else if (Filtro == "Descripcion")
-                ListaTrabajos = await trabajoService.Listar(t => t.Descripcion.ToLower().Contains(ValorFiltro.ToLower()));
+            if (Filtro == "Descripcion")
+            {
+                ListaTrabajos = await trabajoService.Listar(e => e.Descripcion.ToLower().Contains(ValorFiltro.ToLower()));
+            }
+            else if (Filtro == "Fecha")
+            {
+                if (DateTime.TryParse(ValorFiltro, out DateTime fechaFiltro))
+                {
+                    ListaTrabajos = await trabajoService.Listar(e => e.Fecha.Date == fechaFiltro.Date);
+                }
+            }
+            else if (Filtro == "Prioridad")
+            {
+                ListaTrabajos = await trabajoService.Listar(e => e.Prioridad.Descripcion.ToLower().Contains(ValorFiltro.ToLower()));
+            }
         }
         else
-        {
-            ListaTrabajos = await trabajoService.Listar(t => t.TrabajoId > 0);
-        }
+            ListaTrabajos = await trabajoService.Listar(e => e.TrabajoId > 0);
     }
 
     private async Task Restablecer()
     {
-        ListaTrabajos = await trabajoService.Listar(t => t.TrabajoId > 0);
+        ListaTrabajos = await trabajoService.Listar(e => e.TrabajoId > 0);
         Filtro = string.Empty;
         ValorFiltro = string.Empty;
-    }
-
-    public void Crear()
-    {
-        navigationManager.NavigateTo("/Trabajo/Create");
-    }
-
-    public void Observar(int id)
-    {
-        navigationManager.NavigateTo($"Trabajo/Details/{id}");
-    }
-
-    public void Editar(int id)
-    {
-        navigationManager.NavigateTo($"/Trabajo/Edit/{id}");
-    }
-
-    public void Eliminar(int id)
-    {
-        navigationManager.NavigateTo($"/Trabajo/Delete/{id}");
     }
 }
