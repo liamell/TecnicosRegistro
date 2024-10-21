@@ -1,61 +1,48 @@
 ﻿@using TecnicosRegistro.Models
 
-﻿<div class="col-auto input-group align-items-center">
-    <InputSelect class="form-select" @bind-Value="ArticuloId">
 
-        <option disabled value="0">Seleccione un articulo</option>
-        @foreach (var articulo in ListaArticulo)
+
+<div>
+    <h3>Seleccionar Artículo</h3>
+    <InputSelect @bind-Value="ArticuloId" @onchange="ActualizarPrecio">
+        <option disabled value="0">Seleccione un artículo</option>
+        @foreach (var articulo in ListaArticulos)
         {
-            <option value="@articulo.ArticuloId">@articulo.Descripcion -- $ @articulo.Precio</option>
+            <option value="@articulo.ArticuloId">@articulo.Descripcion -- $@articulo.Precio</option>
         }
-
     </InputSelect>
-    @*Cantidad*@
-    <label class="col-form-label input-group-text">Cantidad</label>
-    <InputNumber class="form-control" @bind-Value="Cantidad"></InputNumber>
-    @*Precio*@
-    <label class="col-form-label input-group-text">Precio</label>
-    <InputNumber class="form-control" @bind-Value="Precio" readonly></InputNumber>
+
+    <label class="col-form-label">Cantidad</label>
+    <InputNumber @bind-Value="Cantidad" />
+
+    <label class="col-form-label">Precio</label>
+    <InputNumber @bind-Value="Precio" readonly />
+
     <button type="button" class="btn btn-success bi bi-plus-square" @onclick="ElegirArticulo"></button>
+
+    @if (!string.IsNullOrEmpty(Mensaje))
+    {
+        <div class="alert alert-danger">@Mensaje</div>
+    }
 </div>
-@if (!string.IsNullOrEmpty(Mensaje))
-{
-    <div class="alert alert-danger">@Mensaje</div>
-}
 
 @code {
     [Parameter]
-    public List<Articulo> ListaArticulo { get; set; } = [];
-
-    [Parameter]
-    public int ArticuloId { get; set; }
-
-    [Parameter]
-    public int Cantidad { get; set; }
-
-    [Parameter]
-    public double Precio { get; set; }
+    public List<Articulo> ListaArticulos { get; set; } = new List<Articulo>();
 
     [Parameter]
     public EventCallback<(Articulo articulo, int Cantidad)> ArticuloSeleccionado { get; set; }
 
-    public string? Mensaje { get; set; } = string.Empty;
-
+    public int ArticuloId { get; set; } = 0;
+    public int Cantidad { get; set; } = 1;
+    public double Precio { get; set; } = 0.0;
+    public string Mensaje { get; set; } = string.Empty;
 
     private void ActualizarPrecio()
     {
+        var articuloSeleccionado = ListaArticulos.FirstOrDefault(a => a.ArticuloId == ArticuloId);
+        Precio = (articuloSeleccionado != null && Cantidad > 0) ? (double)(articuloSeleccionado.Precio * Cantidad) : 0;
         
-        var articuloSeleccionado = ListaArticulo.FirstOrDefault(a => a.ArticuloId == ArticuloId);
-
-        if (articuloSeleccionado != null && Cantidad > 0)
-        {
-           
-            Precio = (double)articuloSeleccionado.Precio * Cantidad;
-        }
-        else
-        {
-            Precio = 0; 
-        }
     }
 
     private async Task ElegirArticulo()
@@ -63,13 +50,7 @@
         if (ArticuloId > 0)
         {
             Mensaje = string.Empty;
-            var ArticuloElegido = ListaArticulo.Single(a => a.ArticuloId == ArticuloId);
-            if (ArticuloElegido.Existencia < Cantidad)
-            {
-                Mensaje = "La cantidad que solicita es mayor a la existente";
-                return;
-            }
-            await ArticuloSeleccionado.InvokeAsync((ArticuloElegido, Cantidad));
+            // Lógica adicional para manejar la selección del artículo.
         }
         else
         {
@@ -77,3 +58,4 @@
         }
     }
 }
+﻿
