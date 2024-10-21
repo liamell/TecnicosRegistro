@@ -73,6 +73,7 @@
                         <th>Descripci&oacute;n</th>
                         <th>Prioridad</th>
                         <th>Monto</th>
+                        <th>Articulos</th>
                         <th>Details</th>
                         <th>Edit</th>
                         <th>Delete</th>
@@ -84,28 +85,40 @@
                         <tr>
                             <td>@trabajo.TrabajoId</td>
                             <td>@trabajo.Fecha</td>
-                            <td>@trabajo.Cliente.ClienteId</td>
-                            <td>@trabajo.Cliente.Nombres</td>
-                            <td>@trabajo.Tecnico.TecnicoId</td>
-                            <td>@trabajo.Tecnico.Nombres</td>
+
+                            <td>@(trabajo.Cliente != null ? trabajo.Cliente.ClienteId.ToString() : "N/A")</td>
+
+                            <td>@(trabajo.Cliente != null ? trabajo.Cliente.Nombres : "Sin cliente")</td>
+
+                            <td>@(trabajo.Tecnico != null ? trabajo.Tecnico.TecnicoId.ToString() : "N/A")</td>
+
+                            <td>@(trabajo.Tecnico != null ? trabajo.Tecnico.Nombres : "Sin técnico")</td>
+
                             <td>@trabajo.Descripcion</td>
-                            <td>@trabajo.Prioridad.Descripcion</td>
+                            <td>@(trabajo.Prioridad != null ? trabajo.Prioridad.Descripcion : "N/A")</td>
                             <td>@trabajo.Monto</td>
 
                             <td>
-                                <a href="/Tecnicos/Trabajos/Details/@trabajo.TrabajoId" class="btn btn-outline-primary bi bi-eye-fill"></a>
+                                <a href="/Trabajo/Detalle/@trabajo.TrabajoId" class="btn btn-outline-danger bi bi-eye-fill"></a>
                             </td>
 
                             <td>
-                                <a href="/Tecnicos/Trabajos/Edit/@trabajo.TrabajoId" class="btn btn-outline-warning bi bi-pencil-square"></a>
+                                <a href="/Trabajo/Details/@trabajo.TrabajoId" class="btn btn-outline-primary bi bi-eye-fill"></a>
                             </td>
 
                             <td>
-                                <a href="/Tecnico/Trabajos/Delete/@trabajo.TrabajoId" class="btn btn-outline-danger bi bi-trash-fill"></a>
+                                <a href="/Trabajo/Edit/@trabajo.TrabajoId" class="btn btn-outline-warning bi bi-pencil-square"></a>
                             </td>
 
-                        </tr>
+                            <td>
+                                <a href="/Trabajo/Delete/@trabajo.TrabajoId" class="btn btn-outline-danger bi bi-trash-fill"></a>
+                            </td>
+
+                                                  </tr>
                     }
+
+
+                     
                 </tbody>
             </table>
         </div>
