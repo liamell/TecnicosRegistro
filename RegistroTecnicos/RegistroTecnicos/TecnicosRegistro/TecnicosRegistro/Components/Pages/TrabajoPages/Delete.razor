@@ -1,7 +1,7 @@
 ﻿@page "/Trabajo/Delete/{TrabajoId:int}"
 @using TecnicosRegistro.Models
 @using TecnicosRegistro.Service
-@inject TrabajoService trabajosService
+@inject TrabajoService trabajoService
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -33,10 +33,16 @@
                 <ul class="mt-3">
                     @foreach (var detalle in Trabajo.TrabajosDetalle)
                     {
+                        var articulo = ListaArticulo.FirstOrDefault(a => a.ArticuloId == detalle.ArticuloId);
+
                         <li class="mt-2">
-                            Articulo ID: @detalle.ArticuloId -- @detalle.Articulo?.Descripcion -- Cantidad: @detalle.Cantidad
-                            -- Precio:$ @detalle.Articulo.Precio -- PrecioTotal: $ @detalle.Precio
+                            Articulo ID: @detalle.ArticuloId -- @(articulo?.Descripcion ?? "Descripción no disponible")
+                            -- Cantidad: @detalle.Cantidad -- Precio:$ @(articulo?.Precio ?? 0)
+                            -- PrecioTotal: $ @detalle.Precio
                         </li>
+                    }
+
+                        
                     }
                 </ul>
             </div>
@@ -59,9 +65,12 @@
 
     public string Mensaje { get; set; } = string.Empty;
 
+    public List<Articulo> ListaArticulo { get; set; } = new List<Articulo>();
+
+
     protected override async Task OnInitializedAsync()
     {
-        Trabajo = await trabajosService.BuscarConDetalles(TrabajoId);
+        Trabajo = await trabajoService.BuscarConDetalles(TrabajoId);
     }
 
     public void Volver()
@@ -71,7 +80,7 @@
 
     public async Task Eliminar()
     {
-        var eliminado = await trabajosService.Eliminar(Trabajo.TrabajoId);
+        var eliminado = await trabajoService.Eliminar(Trabajo.TrabajoId);
 
         if (eliminado)
         {
