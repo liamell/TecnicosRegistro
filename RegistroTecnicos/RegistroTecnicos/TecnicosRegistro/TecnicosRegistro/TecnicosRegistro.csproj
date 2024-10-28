@@ -8,16 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="Blazor.Bootstrap" Version="3.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="microsoft.entityframeworkcore.sqlite" Version="8.0.8" />
+    <PackageReference Include="microsoft.entityframeworkcore.SqlServer" Version="8.0.10" />
     <PackageReference Include="microsoft.entityframeworkcore.tools" Version="8.0.8">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>
