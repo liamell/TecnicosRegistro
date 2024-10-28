@@ -5,11 +5,12 @@ using TecnicosRegistro.Models;
 
 namespace TecnicosRegistro.Service;
 
-public class TrabajoDetalleService(Contexto contexto)
+public class TrabajoDetalleService(IDbContextFactory<Contexto> DbFactory)
 {
 	public async Task<List<Articulo>> Listar(Expression<Func<Articulo, bool>> criterio)
 	{
-		return await contexto
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+        return await contexto
 			.Articulo
 			.Where(criterio)
 			.ToListAsync();
