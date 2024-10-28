@@ -13,8 +13,8 @@ builder.Services.AddBlazorBootstrap();
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
 
-var ConStr = builder.Configuration.GetConnectionString("ConStr");
-builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlite(ConStr));
+var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
 
 var ConStrTipoTecnico = builder.Configuration.GetConnectionString("ConStrTipoTecnico");
 
@@ -24,7 +24,8 @@ builder.Services.AddScoped<ClientesService>();
 builder.Services.AddScoped<TrabajoService>();
 builder.Services.AddScoped<PrioridadService>();
 builder.Services.AddScoped<TrabajoDetalleService>();
-
+builder.Services.AddScoped<CotizacionService>();
+builder.Services.AddScoped<CotizacionDetalleService>();
 
 var app = builder.Build();
 
