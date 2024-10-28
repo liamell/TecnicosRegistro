@@ -14,5 +14,9 @@ namespace TecnicosRegistro.Models
         [Required(ErrorMessage = "El tiempo es obligatorio.")]
         [Range(1, int.MaxValue, ErrorMessage = "El tiempo debe ser un valor positivo.")]
         public int Tiempo { get; set; }
+
+        [Required(ErrorMessage = "Campo obligatorio")]
+        public DateTime Fecha { get; set; } = DateTime.Now;
+
     }
 }

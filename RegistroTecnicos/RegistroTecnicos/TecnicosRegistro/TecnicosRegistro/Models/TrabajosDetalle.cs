@@ -26,4 +26,7 @@ public class TrabajosDetalle
 	[Required(ErrorMessage = "Campo obligatorio")]
 	public double Costo { get; set; }
 
+    [Required(ErrorMessage = "Campo obligatorio")]
+    public DateTime Fecha { get; set; } = DateTime.Now;
+
 }

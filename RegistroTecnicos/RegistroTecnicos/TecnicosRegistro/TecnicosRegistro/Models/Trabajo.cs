@@ -7,7 +7,7 @@ public class Trabajo
 {
     [Key]
     public int TrabajoId { get; set; }
-    public DateTime Fecha { get; set; }
+   
     
     public string? Descripcion { get; set; }
 	
@@ -19,7 +19,6 @@ public class Trabajo
 	[ForeignKey("TrabajoId")]
 	public ICollection<TrabajosDetalle> TrabajosDetalle { get; set; } = new List<TrabajosDetalle>();
 
-
     [ForeignKey("Clientes")]
     public int ClienteId { get; set; }
     public Clientes Cliente { get; set; }
@@ -28,9 +27,12 @@ public class Trabajo
     public int TecnicoId { get; set; }
     public Tecnicos Tecnico { get; set; }
 
-    [ForeignKey("Prioridades")]
+    [ForeignKey("Prioridad")]
     public int PrioridadId { get; set; }
     public Prioridad Prioridad { get; set; }
 
-   
+    [Required(ErrorMessage = "Campo obligatorio")]
+    public DateTime Fecha { get; set; } = DateTime.Now;
+
+
 }

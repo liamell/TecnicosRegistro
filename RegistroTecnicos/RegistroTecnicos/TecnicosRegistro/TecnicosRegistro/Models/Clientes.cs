@@ -15,6 +15,9 @@ public class Clientes
 	[RegularExpression(@"^\d{7,15}$", ErrorMessage = "El número de WhatsApp debe contener entre 7 y 15 dígitos.")]
 	public string? WhatssApp { get; set; }
 
+    [Required(ErrorMessage = "Campo obligatorio")]
+    public DateTime Fecha { get; set; } = DateTime.Now;
+
 
 
 

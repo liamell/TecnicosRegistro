@@ -11,4 +11,6 @@ public class TipoTecnico
 	[Required(ErrorMessage = "Descripción Obligatoria")]
 	public string? Descripcion { get; set; }
 
+    [Required(ErrorMessage = "Campo obligatorio")]
+    public DateTime Fecha { get; set; } = DateTime.Now;
 }
