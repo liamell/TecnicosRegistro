@@ -22,7 +22,10 @@ public class Contexto : DbContext
 	public DbSet<Articulo> Articulo { get; set; }
 
 	public DbSet<TrabajosDetalle> TrabajosDetalle { get; set; }
-	protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+    public DbSet<Cotizar> Cotizar { get; set; }
+    public DbSet<CotizarDetalles> CotizarDetalles { get; set; }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		base.OnModelCreating(modelBuilder);
 		modelBuilder.Entity<Articulo>().HasData(new List<Articulo>()
