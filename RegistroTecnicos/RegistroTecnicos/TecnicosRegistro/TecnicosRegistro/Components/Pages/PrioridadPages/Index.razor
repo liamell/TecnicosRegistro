@@ -27,6 +27,7 @@
                         <option value="Id">Id</option>
                         <option value="Descripcion">Descripción</option>
                         <option value="Tiempo">Tiempo</option>
+                         <option value="Fecha">Fecha</option>
                     </InputSelect>
                 </div>
                 <div class="col-4">
@@ -37,6 +38,25 @@
                 </div>
                 <div class="col-auto">
                     <button type="button" class="btn btn-outline-secondary bi bi-arrow-clockwise" @onclick="Restablecer"></button>
+                </div>
+
+                @*FiltroFecha*@
+                <div class="row mt-3">
+
+                    @*Desde*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Desde</strong></label>
+                        <InputDate class="form-control" @bind-Value="Desde"></InputDate>
+                    </div>
+
+                    @*Hasta*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Hasta</strong></label>
+                        <div class="input-group">
+                            <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+                        </div>
+
+                    </div>
                 </div>
                 <div class="col text-end">
                     <button type="button" class="btn btn-primary bi bi-plus-circle" @onclick="Crear"></button>
@@ -87,11 +107,15 @@
     public List<Prioridad> ListaPrioridades { get; set; } = new List<Prioridad>();
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
+    public DateTime? Desde { get; set; }
+    public DateTime? Hasta { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        // Asegúrate de que este método Listar sea asíncrono y devuelva Task<List<Prioridad>>
+        
         ListaPrioridades = await prioridadService.Listar(p => p.PrioridadId > 0);
+        Desde = null;
+        Hasta = null;
     }
 
     private async Task Buscar()
@@ -102,6 +126,11 @@
                 ListaPrioridades = await prioridadService.Listar(p => p.PrioridadId == prioridadId);
             else if (Filtro == "Descripcion")
                 ListaPrioridades = await prioridadService.Listar(p => p.Descripcion.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+        else if (Filtro == "Fecha")
+        {
+            ListaPrioridades = await prioridadService
+            .Listar(f => f.Fecha >= Desde && f.Fecha <= Hasta);
         }
         else
         {

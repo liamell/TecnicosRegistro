@@ -59,6 +59,25 @@
                     <button type="button" class="btn btn-outline-secondary bi bi-arrow-clockwise" @onclick="Restablecer"></button>
                 </div>
 
+                @*FiltroFecha*@
+                <div class="row mt-3">
+
+                    @*Desde*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Desde</strong></label>
+                        <InputDate class="form-control" @bind-Value="Desde"></InputDate>
+                    </div>
+
+                    @*Hasta*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Hasta</strong></label>
+                        <div class="input-group">
+                            <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+                        </div>
+
+                    </div>
+                </div>-
+
 
             </div>
             <table class="table table-bordered text-center mt-4">
@@ -85,15 +104,10 @@
                         <tr>
                             <td>@trabajo.TrabajoId</td>
                             <td>@trabajo.Fecha</td>
-
                             <td>@(trabajo.Cliente != null ? trabajo.Cliente.ClienteId.ToString() : "N/A")</td>
-
                             <td>@(trabajo.Cliente != null ? trabajo.Cliente.Nombres : "Sin cliente")</td>
-
                             <td>@(trabajo.Tecnico != null ? trabajo.Tecnico.TecnicoId.ToString() : "N/A")</td>
-
                             <td>@(trabajo.Tecnico != null ? trabajo.Tecnico.Nombres : "Sin técnico")</td>
-
                             <td>@trabajo.Descripcion</td>
                             <td>@(trabajo.Prioridad != null ? trabajo.Prioridad.Descripcion : "N/A")</td>
                             <td>@trabajo.Monto</td>
@@ -137,10 +151,14 @@
     public List<Trabajo> ListaTrabajos { get; set; } = new List<Trabajo>();
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
+    public DateTime? Desde { get; set; }
+    public DateTime? Hasta { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         ListaTrabajos = await trabajoService.Listar(e => e.TrabajoId > 0);
+        Desde = null;
+        Hasta = null;
     }
 
     private async Task Buscar()
@@ -163,6 +181,12 @@
                 ListaTrabajos = await trabajoService.Listar(e => e.Prioridad.Descripcion.ToLower().Contains(ValorFiltro.ToLower()));
             }
         }
+        else if (Filtro == "Fecha")
+        {
+            ListaTrabajos = await trabajoService
+            .Listar(f => f.Fecha >= Desde && f.Fecha <= Hasta);
+        }
+
         else
             ListaTrabajos = await trabajoService.Listar(e => e.TrabajoId > 0);
     }

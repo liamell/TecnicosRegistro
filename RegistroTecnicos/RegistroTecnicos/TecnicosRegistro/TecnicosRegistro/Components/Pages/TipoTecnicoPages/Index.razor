@@ -34,8 +34,13 @@
 						<option value="" disabled>Elija una opción</option>
 						<option value="id">ID</option>
 						<option value="descripcion">Descripci&oacute;n</option>
+						<option value="Fecha">Fecha</option>
 					</InputSelect>
 				</div>
+
+
+
+
 				@*Búsqueda*@
 				<div class="col-4">
 					<div class="input-group">
@@ -49,6 +54,27 @@
 				<div class="col text-end">
 					<button type="button" class="btn btn-outline-primary ms-2" @onclick="Crear">Crear</button>
 				</div>
+
+				@*FiltroFecha*@
+				<div class="row mt-3">
+
+					@*Desde*@
+					<div class="col-3">
+						<label class="col-form-label"><strong>Desde</strong></label>
+						<InputDate class="form-control" @bind-Value="Desde"></InputDate>
+					</div>
+
+					@*Hasta*@
+					<div class="col-3">
+						<label class="col-form-label"><strong>Hasta</strong></label>
+						<div class="input-group">
+							<InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+						</div>
+
+					</div>
+				</div>
+
+
 			</div>
 			@*Tabla*@
 			<div class="text-center mt-3">
@@ -93,10 +119,14 @@
 	public List <TipoTecnico> ListaTipoTecnico{get; set;} = new List<TipoTecnico>();
 	private string filtro = "";
 	private string valorFiltro = "";
+	public DateTime? Desde { get; set; }
+	public DateTime? Hasta { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
 		ListaTipoTecnico = await tipotecnicoService.Listar(tp => true);
+		Desde = null;
+		Hasta = null;
 	}
 
 	private async Task Buscar()
@@ -112,10 +142,16 @@
 				ListaTipoTecnico = await tipotecnicoService.Listar(t => t.Descripcion.ToLower().Contains(valorFiltro.ToLower()));
 			}
 		}
+		else if (filtro == "Fecha")
+		{
+			ListaTipoTecnico = await tipotecnicoService.Listar(f => f.Fecha >= Desde && f.Fecha <= Hasta);
+
+		}
 		else
 		{
-			ListaTipoTecnico = await tipotecnicoService.Listar(t => true);
+			ListaTipoTecnico = await tipotecnicoService.Listar(e => e.TipoId > 0);
 		}
+
 	}
 
 	public async Task Restablecer()

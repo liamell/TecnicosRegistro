@@ -36,6 +36,7 @@
                         <option value="Id">Id</option>
                         <option value="Nombre">Nombre</option>
                         <option value="SueldoHora">SueldoHora</option>
+                         <option value="Fecha">Fecha</option>
                     </InputSelect>
                 </div>
                 @*Busqueda*@
@@ -49,6 +50,26 @@
                 <div class="col-auto">
                     <button type="button" class="btn btn-outline-secondary bi bi-arrow-clockwise" @onclick="Restablecer"></button>
                 </div>
+
+                @*FiltroFecha*@
+                <div class="row mt-3">
+
+                    @*Desde*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Desde</strong></label>
+                        <InputDate class="form-control" @bind-Value="Desde"></InputDate>
+                    </div>
+
+                    @*Hasta*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Hasta</strong></label>
+                        <div class="input-group">
+                            <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+                        </div>
+
+                    </div>
+                </div>
+
                 @*Crear*@
                 <div class="col text-end">
                     <button type="button" class="btn btn-primary bi bi-plus-circle" @onclick="Crear"></button>
@@ -107,25 +128,39 @@
     public List<Tecnicos> ListaTecnicos { get; set; } = new List<Tecnicos>();
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
+    public DateTime? Desde { get; set; }
+    public DateTime? Hasta { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        ListaTecnicos = await tecnicoService.Listar(t => t.TecnicoId > 0);
+        await CargarTecnicos();
     }
 
+    private async Task CargarTecnicos()
+    {
+        ListaTecnicos = await tecnicoService.Listar(t => t.TecnicoId > 0);
+        Desde = null;
+        Hasta = null;
+    }
     private async Task Buscar()
     {
-        if (ValorFiltro.Trim() != "")
+        if (!string.IsNullOrWhiteSpace(ValorFiltro))
         {
             if (Filtro == "Id" && int.TryParse(ValorFiltro, out int tecnicoId))
                 ListaTecnicos = await tecnicoService.Listar(t => t.TecnicoId == tecnicoId);
             else if (Filtro == "Nombre")
                 ListaTecnicos = await tecnicoService.Listar(t => t.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
-
+        }
+        else if (Filtro == "Fecha")
+        {
+            ListaTecnicos = await tecnicoService.Listar(f => f.Fecha >= Desde && f.Fecha <= Hasta);
         }
         else
-            ListaTecnicos = await tecnicoService.Listar(t => t.TecnicoId > 0);
+        {
+            await CargarTecnicos();
+        }
     }
+
 
     private async Task Restablecer()
     {

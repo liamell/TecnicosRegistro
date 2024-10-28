@@ -41,8 +41,9 @@
                             -- Cantidad: @detalle.Cantidad
                             -- Precio: $@detalle.Articulo?.Precio ?? "N/A"
                             -- PrecioTotal: $ @detalle.Precio
-                            </li>
+                        </li>
                     }
+                   
                 </ul>
             </div>
         </div>
@@ -71,7 +72,7 @@
 
     public void Volver()
     {
-        navigationManager.NavigateTo("/Tecnicos/Trabajos/Index");
+        navigationManager.NavigateTo("/Trabajo/Index");
     }
 
     public async Task Eliminar()
@@ -81,7 +82,7 @@
         if (eliminado)
         {
             Mensaje = "El trabajo a sido eliminado correctamente";
-            navigationManager.NavigateTo("/Tecnicos/Trabajos/Index");
+            navigationManager.NavigateTo("/Trabajo/Index");
         }
         else
         {

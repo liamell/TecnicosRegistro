@@ -35,6 +35,7 @@
                         <option value="Id">Id</option>
                         <option value="Nombre">Nombre</option>
                         <option value="WhatssApp">WhatssApp</option>
+                        <option value="Fecha">Fecha</option>
                     </InputSelect>
                 </div>
                 @*Busqueda*@
@@ -110,10 +111,14 @@
     public List<Clientes> ListaClientes { get; set; } = new List<Clientes>();
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
+    public DateTime? Desde { get; set; }
+    public DateTime? Hasta { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         ListaClientes = await clientesService.Listar(c => c.ClienteId > 0);
+        Desde = null;
+        Hasta = null;
     }
 
     private async Task Buscar()
@@ -125,6 +130,11 @@
             else if (Filtro == "Nombre")
                 ListaClientes = await clientesService.Listar(c => c.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
 
+        }
+        else if (Filtro == "Fecha")
+        {
+            ListaClientes = await clientesService
+            .Listar(f => f.Fecha >= Desde && f.Fecha <= Hasta);
         }
         else
             ListaClientes = await clientesService.Listar(c => c.ClienteId > 0);

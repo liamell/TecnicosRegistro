@@ -23,6 +23,13 @@
                         <label class="form-label"><strong>T&eacute;cnicoId</strong></label>
                         <InputNumber class="form-control" @bind-Value="Tecnico.TecnicoId" readonly></InputNumber>
                     </div>
+
+                    @*Fecha*@
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Fecha</strong></label>
+                        <InputDate class="form-control" @bind-Value="Tecnico.Fecha"></InputDate>
+                    </div>
+
                     @*Nombre*@
                     <div class="col-3 ms-5">
                         <label class="form-label"><strong>Nombre</strong></label>
@@ -46,7 +53,7 @@
         </div>
     </div>
 </EditForm>
-
+@Mensaje
 
 
 @code {
@@ -55,16 +62,38 @@
 
     public async Task Guardar()
     {
-        
-        var crear = await tecnicoService.Guardar(Tecnico);
 
-        if (crear)
-            Mensaje = "Se ha creado correctamente el Tecnico";
-        else
-            Mensaje = "No se ha creado correctamente";
+        try
+        {
+            if (await Validar())
+            {
+                Mensaje = "Ya existe un cliente con este nombre";
+                return;
+            }
+
+            var crear = await tecnicoService.Guardar(Tecnico);
+
+            Mensaje = crear ? "Se ha creado correctamente el Tecnico" : "No se ha creado correctamente";
+        }
+        catch (Exception ex)
+        {
+            Mensaje = $"Error al guardar: {ex.Message}";
+
+            if (ex.InnerException != null)
+            {
+                Mensaje += $" | Detalle: {ex.InnerException.Message}";
+            }
+        }
+
+
+
     }
 
-    
+    private async Task<bool> Validar()
+    {
+        var existe = await tecnicoService.ExisteTecnico(Tecnico.TecnicoId, Tecnico.Nombres);
+        return existe;
+    }
 
     public void Volver()
     {

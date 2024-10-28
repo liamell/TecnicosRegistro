@@ -121,8 +121,7 @@
         ListaPrioridad = await prioridadService.Listar(p => p.PrioridadId > 0);
     }
 
-   
-
+  
     private async Task<bool> Validar()
     {
         var valido = await trabajoService.ExisteTrabajo(Trabajo.TrabajoId);
@@ -148,7 +147,7 @@
 
     public void Volver()
     {
-        navigationManager.NavigateTo("/Tecnicos/Trabajos/Index");
+        navigationManager.NavigateTo("/Trabajo/Index");
     }
 
 }
